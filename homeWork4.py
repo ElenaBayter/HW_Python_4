@@ -1,147 +1,108 @@
-# Задайте список из нескольких чисел. Напишите программу,
-# которая найдёт сумму элементов списка с нечетными индексами.
-# Пример: [2, 3, 5, 9, 3] -> на нечётных позициях элементы 3 и 9, ответ: 12
+from random import randint as RI
 
-# my_list = [2, 3, 5, 9, 3]
-# print(my_list)
-# sum = 0
-# for i in range(len(my_list)):
-#     if i%2 != 0:
-#         sum += my_list[i]
-# print(sum)
+def create_pattern() -> dict:
+    degree = int(input("Write a maximal degree for polynomial: "))
+    equation_pattern = {}
+    for key in range(degree, -1, -1):
+        value = RI(-100, 100)
+        equation_pattern[key] = value
+    return equation_pattern
 
 
+def decode_equation(equation: dict) -> str:
+    new_equation = ''
+    first = True
+    for(key, value) in equation.items():
+        if value != 0:
+            if first:
+                if value > 0:
+                    new_equation += f'{value}*x**{key} '
+                else:
+                    new_equation += f'-{value * (-1)}*x**{key} '
+                first = False
+            else:
+                if value == 1:
+                    if key == 1:
+                        new_equation += f'+ x '
+                    elif key == 0:
+                        new_equation += f'+ 1 '
+                    else:
+                        new_equation += f'+ x**{key} '
+                elif value > 1:
+                    if key == 1:
+                        new_equation += f'+ {value}*x '
+                    elif key == 0:
+                        new_equation += f'+ {value} '
+                    else:
+                        new_equation += f'+ {value}*x**{key} '
+                elif value == -1:
+                    if key == 1:
+                        new_equation += f'- x '
+                    elif key == 0:
+                        new_equation += f'- 1 '
+                    else:
+                        new_equation += f'- x**{key} '
+                elif value < 1:
+                    if key == 1:
+                        new_equation += f'- {abs(value)}*x '
+                    elif key == 0:
+                        new_equation += f'- {abs(value)} '
+                    else:
+                        new_equation += f'- {abs(value)}*x**{key} '
+    return new_equation + '= 0'
 
 
-# Напишите программу, которая найдёт произведение пар чисел списка.
-# Парой считаем первый и последний элемент, второй и предпоследний и т.д.
-# Пример:
-# [2, 3, 4, 5, 6] => [12, 15, 16]
-# [2, 3, 5, 6] => [12, 15]
+def encode_equation(equation: str) -> dict:
+    new_equation = []
+    equation = equation.replace(' = 0', '').replace(' + ', ' ').replace(' - ', ' -').split(' ')
+    for item in equation:
+        if not 'x' in item:
+            new_equation.append([item, 0])
+        else:
+            if item.endswith('x'):
+                if item == 'x':
+                    new_equation.append(['1', '1'])
+                elif item == '-x':
+                    new_equation.append(['-1', '1'])
+                else:
+                    new_equation.append((item + '1').split('*x'))
+            else:
+                if item.startswith('x'):
+                    new_equation.append(('1' + item).split('x**'))
+                elif item.startswith('-x'):
+                    new_equation.append(item.replace('-', '-1').split('x**'))
+                else:
+                    new_equation.append(item.split('*x**'))
+    equation_pattern = {}
+    for item in new_equation:
+        equation_pattern[int(item[1])] = int(item[0])
+    return equation_pattern
 
 
-# size = int(input('Write a size of list'))
-# my_list = []
-# for i in range(size):
-#     my_list.append(i)
-# print(*my_list)
-# count = 0
-# steps = 0
-# new_list = []
-# for i in range(len(my_list)):
-#     count = int(my_list[0+i] * my_list[-1-i])
-#     steps += 1
-#     new_list.append(count)
-#     if steps >= len(my_list)/2:
-#         break
-# print(new_list)
+first = create_pattern()
+second = create_pattern()
+
+def equation_addition(first: dict, second: dict) -> dict:
+    base = {}
+    base.update(first)
+    base.update(second)
+    for key in base:
+        if first.get(key) and second.get(key):
+            base[key] = first.get(key) + second.get(key)
+        elif first.get(key):
+            base[key] = first.get(key)
+        else:
+            base[key] = second.get(key)
+    return dict(sorted(base.items())[::-1])
 
 
-
-# Задайте список из вещественных чисел. Напишите программу,
-# которая найдёт разницу между максимальным и минимальным значением дробной части элементов.
-# (подробности в конце записи семинара).
-# Пример: [1.1, 1.2, 3.1, 5, 10.01] => 0.19
-
-# import random, random
-
-# size = int(input("Write a size of list: "))
-#
-# my_list = []
-# for i in range(size):
-#     i = random.uniform(0, 10000)
-#     my_list.append(round(i, 2))
-# print(*my_list)
-# new_list = []
-# desim = 0
-# for i in range(len(my_list)):
-#     desim = my_list[i]-int(my_list[i])
-#     new_list.append(round(desim, 2))
-# print(*new_list)
-# max_desim_number = max(new_list)
-# print(max_desim_number)
-# min_desim_number = min(new_list)
-# print(min_desim_number)
-# result = max_desim_number - min_desim_number
-# print(f'Difference between maximal and minimal fractional parts of elements is {round(result, 2)}')
-
-
-
-
-
-# Напишите программу, которая будет преобразовывать десятичное число в двоичное.
-# Без применения встроеных методов (арифметически)
-# Пример:
-# 45 -> 101101
-# 3 -> 11
-# 2 -> 10
-
-# number = int(input('Write a number: '))
-# double_num = []
-# div = 0
-# while number > 0:
-#     div = number % 2
-#     double_num.append(div)
-#     number //= 2
-# print(*double_num[::-1])
-
-
-  # SECOND OPTION
-
-# number = int(input('Write a number: '))
-# double_num = ''
-# while number > 0:
-#     double_num = str(number % 2) + double_num
-#     number //= 2
-# print(double_num)
-
-
-
-
-# Задайте число. Составьте список чисел Фибоначчи,
-# в том числе для отрицательных индексов (Негафибоначчи).
-# Пример: для k = 8 список будет выглядеть так:
-# [-21 ,13, -8, 5, −3, 2, −1, 1, 0, 1, 1, 2, 3, 5, 8, 13, 21]
-
-# n = int(input("Write a size of list: "))
-# fib_array = []
-# for i in range(n):
-#     if i == 0:
-#         fib_array[i] = 0
-#         fib_array.append(fib_array[i])
-#     if i == 1:
-#         fib_array[i] = 1
-#         fib_array.append(fib_array[i])
-#     else:
-#         fib_array[i] = fib_array[i - 1] + fib_array[i - 2]
-#         fib_array.append(fib_array[i])
-# for i in range(-n, 0):
-#     if i == 0:
-#         fib_array[i] = 0
-#         fib_array.insert(fib_array[i])
-#     if i == 1:
-#         fib_array[i] = 1
-#         fib_array.insert(fib_array[i])
-#     else:
-#         fib_array[i] = fib_array[i - 1] - fib_array[i - 2]
-#         fib_array.insert(fib_array[i])
-# print(fib_array)
+result = equation_addition(first, second)
+print(decode_equation(first))
+print(decode_equation(second))
+print(decode_equation(result))
 
 
 
-# OTHER OPTION
-# f1 = 0
-# f2 = 1
-# print(f1, f2, end=' ')
-# for i in range(-n, 0):
-#     f1, f2 = f2, f1 - f2
-#     print(f2, end=' ')
-# fib1 = fib2 = 1
-# print(fib1, fib2, end=' ')
-#
-# for i in range(2, n):
-#     fib1, fib2 = fib2, fib1 + fib2
-#     print(fib2, end=' ')
-
-
-# BOTH OF OPTIONS DOESN'T WORK, BUT I WROTE HOW I UNDERSTAND. SORRY(((((
+# file = open('equation1.txt', 'w')
+# file.write(equation)
+# file.close()
